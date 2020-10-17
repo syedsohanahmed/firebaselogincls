@@ -1,6 +1,9 @@
-import 'package:cls5navigation/welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:cls5navigation/helper.dart';
+import 'package:cls5navigation/auth_helper.dart';
+import 'package:cls5navigation/Homepage.dart';
+
+
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
@@ -10,6 +13,25 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  static const String id = "login_screen";
+
+
+
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
+
+  @override
+  void initState(){
+    super.initState();
+
+    _emailController = TextEditingController(text: "");
+    _passwordController = TextEditingController(text: "");
+
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 40.0,),
             TextField(
+              controller: _emailController,
               textAlign: TextAlign.center,
               onChanged: (value)
               {
@@ -33,10 +56,10 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               decoration: TextFieldDecoration.copyWith(hintText: " Enter your User name/email"),
 
-
             ),
             SizedBox(height: 10.0,),
             TextField(
+              controller: _passwordController,
               obscureText: true,
                 textAlign: TextAlign.center,
                 onChanged: (value)
@@ -51,19 +74,38 @@ class _LoginScreenState extends State<LoginScreen> {
             RoundedButton(
               title: "Log In",
               colour: Colors.deepOrange,
-              onPressed: (){
+              onPressed: () async {
+
+            if (_emailController.text.isEmpty|| _passwordController.text.isEmpty ) {
+              print("Email and password is empty");
+              return;
+            }
+            try {
+              final user = await AuthHelper.signInWithEmail(
+                email: _emailController.text,
+                password: _passwordController.text);
+                  if(user != null){
+                    print("Login success");
+              }
+            }
+            catch (e) {
+               print(e);
+            }
+
 
               },
             ),
-
             RoundedButton(
-              title: "Back to home",
+              title: "Login with Google",
               colour: Colors.green,
-              onPressed: (){
-                Navigator.pushNamed(context,WelcomeScreen.id);
+              onPressed: () async {
+                  try{
+                    await AuthHelper.signInWithGoogle();
+                  }  catch (e){
+                    print (e);
+                  }
               },
             )
-
 
           ],
 
